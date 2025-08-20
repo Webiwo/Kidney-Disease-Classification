@@ -16,6 +16,7 @@ conda create -n cnncls python=3.13 -y
 
 ```bash
 conda activate cnncls
+```
 
 
 ### STEP 02- install the requirements
