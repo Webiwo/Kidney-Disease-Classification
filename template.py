@@ -22,7 +22,6 @@ list_of_files = [
     f"tests/{project_name}/components/__init__.py",
     f"tests/{project_name}/utils/__init__.py",
     f"tests/{project_name}/config/__init__.py",
-    f"tests/{project_name}/config/configuration.py",
     f"tests/{project_name}/pipeline/__init__.py",
     f"tests/{project_name}/entity/__init__.py",
     f"tests/{project_name}/constants/__init__.py",
