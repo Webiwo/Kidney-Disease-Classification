@@ -151,7 +151,7 @@ def decode_image(imgstring: NonEmptyStr, file_name: NonEmptyStr) -> None:
 
 
 @beartype
-def encode_image_into_base64(cropped_image_path: NonEmptyStr) -> bytes:
+def encode_image_into_base64(cropped_image_path: NonEmptyStr) -> str:
     """Encode image file to base64.
 
     Args:
@@ -162,4 +162,4 @@ def encode_image_into_base64(cropped_image_path: NonEmptyStr) -> bytes:
     """
 
     with open(cropped_image_path, "rb") as f:
-        return base64.b64encode(f.read())
+        return base64.b64encode(f.read()).decode("utf-8")
