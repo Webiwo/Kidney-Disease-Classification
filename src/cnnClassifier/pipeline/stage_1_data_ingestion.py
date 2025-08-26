@@ -20,8 +20,8 @@ class DataIngestionTrainingPipeline:
 if __name__ == "__main__":
     try:
         logger.info(f"*********** {STAGE_NAME} started ***********")
-        pipe = DataIngestionTrainingPipeline()
-        pipe.main()
+        pipeline = DataIngestionTrainingPipeline()
+        pipeline.main()
         logger.info(f"*********** {STAGE_NAME} completed ***********")
     except Exception as e:
         logger.exception(f"Data ingestion pipeline failed: {e}")
