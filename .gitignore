@@ -210,3 +210,4 @@ __marimo__/
 artifact/*
 artifacts/data_ingestion/*
 artifacts/data_ingestion/data/*
+artifacts/base_model/*
