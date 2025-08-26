@@ -1,6 +1,10 @@
 from cnnClassifier.constants import CONFIG_FILE_PATH, PARAMS_FILE_PATH
 from cnnClassifier.utils.common import read_yaml, create_directories
-from cnnClassifier.entity.config_entity import DataIngestionConfig, BaseModelConfig
+from cnnClassifier.entity.config_entity import (
+    DataIngestionConfig,
+    BaseModelConfig,
+    TrainingConfig,
+)
 from pathlib import Path
 
 
@@ -42,4 +46,22 @@ class ConfigurationManager:
             params_include_top=params.INCLUDE_TOP,
             params_weights=params.WEIGHTS,
             params_classes=params.CLASSES,
+        )
+
+    def get_training_config(self) -> TrainingConfig:
+        training = self.config.training
+        base_model = self.config.base_model
+        params = self.params
+
+        create_directories(training.root_dir)
+
+        return TrainingConfig(
+            root_dir=Path(training.root_dir),
+            trained_model_path=Path(training.trained_model_path),
+            updated_base_model_path=Path(base_model.updated_base_model_path),
+            training_data=Path(self.config.data_ingestion.unzip_dir),
+            params_epochs=params.EPOCHS,
+            params_batch_size=params.BATCH_SIZE,
+            params_is_augmentation=params.AUGMENTATION,
+            params_image_size=tuple(params.IMAGE_SIZE),
         )
