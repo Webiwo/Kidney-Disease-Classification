@@ -18,4 +18,5 @@ Flask
 Flask-Cors
 gdown
 pytest
+dagshub
 -e .

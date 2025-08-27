@@ -32,3 +32,10 @@ class TrainingConfig:
     params_batch_size: int
     params_is_augmentation: bool
     params_image_size: tuple
+
+
+@dataclass(frozen=True)
+class DagshubConfig:
+    repo_owner: str
+    repo_name: str
+    mlflow: bool

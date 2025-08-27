@@ -4,6 +4,7 @@ from cnnClassifier.entity.config_entity import (
     DataIngestionConfig,
     BaseModelConfig,
     TrainingConfig,
+    DagshubConfig,
 )
 from pathlib import Path
 
@@ -64,4 +65,13 @@ class ConfigurationManager:
             params_batch_size=params.BATCH_SIZE,
             params_is_augmentation=params.AUGMENTATION,
             params_image_size=tuple(params.IMAGE_SIZE),
+        )
+
+    def get_dagshub_config(self) -> DagshubConfig:
+        dags_hub = self.config.dagshub
+
+        return DagshubConfig(
+            repo_owner=dags_hub.repo_owner,
+            repo_name=dags_hub.repo_name,
+            mlflow=dags_hub.mlflow,
         )

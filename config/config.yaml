@@ -14,3 +14,8 @@ base_model:
 training:
   root_dir: artifacts/training
   trained_model_path: artifacts/training/model.keras  
+
+dagshub:
+  repo_owner: Webiwo
+  repo_name: Kidney-Disease-Classification
+  mlflow: True   

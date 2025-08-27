@@ -1,22 +1,30 @@
 import tensorflow as tf
-from cnnClassifier.config.configuration import TrainingConfig
+import mlflow
+import mlflow.keras
+from cnnClassifier.config.configuration import TrainingConfig, BaseModelConfig
 from pathlib import Path
 
 
 class Training:
-    def __init__(self, config: TrainingConfig):
-        self.config = config
+
+    def __init__(
+        self, training_config: TrainingConfig, base_model_config: BaseModelConfig
+    ):
+        self.training_config = training_config
+        self.base_model_config = base_model_config
 
     def get_base_model(self):
-        self.model = tf.keras.models.load_model(self.config.updated_base_model_path)
+        self.model = tf.keras.models.load_model(
+            self.training_config.updated_base_model_path
+        )
 
     def train_valid_generator(self):
-        img_size = self.config.params_image_size[:-1]  # (224,224)
-        batch_size = self.config.params_batch_size
+        img_size = self.training_config.params_image_size[:-1]  # (224,224)
+        batch_size = self.training_config.params_batch_size
 
         # --- train dataset ---
         self.train_generator = tf.keras.utils.image_dataset_from_directory(
-            directory=self.config.training_data,
+            directory=self.training_config.training_data,
             labels="inferred",
             label_mode="categorical",  # softmax
             batch_size=batch_size,
@@ -29,7 +37,7 @@ class Training:
 
         # --- validation dataset ---
         self.valid_generator = tf.keras.utils.image_dataset_from_directory(
-            directory=self.config.training_data,
+            directory=self.training_config.training_data,
             labels="inferred",
             label_mode="categorical",
             batch_size=batch_size,
@@ -54,7 +62,7 @@ class Training:
         )
 
         # --- augmentation ---
-        if self.config.params_is_augmentation:
+        if self.training_config.params_is_augmentation:
             data_augmentation = tf.keras.Sequential(
                 [
                     tf.keras.layers.RandomFlip("horizontal"),
@@ -82,10 +90,36 @@ class Training:
         model.save(path)
 
     def train(self):
-        self.model.fit(
+        with mlflow.start_run():
+            mlflow.log_param("epochs", self.training_config.params_epochs)
+            mlflow.log_param("batch_size", self.training_config.params_batch_size)
+            mlflow.log_param("image_size", self.training_config.params_image_size)
+            mlflow.log_param(
+                "learning_rate", self.base_model_config.params_learning_rate
+            )
+            mlflow.log_param(
+                "augmentation", self.training_config.params_is_augmentation
+            )
+
+        history = self.model.fit(
             self.train_generator,
-            epochs=self.config.params_epochs,
+            epochs=self.training_config.params_epochs,
             validation_data=self.valid_generator,
         )
 
-        self.save_model(path=self.config.trained_model_path, model=self.model)
+        for epoch in range(self.training_config.params_epochs):
+            mlflow.log_metric("train_loss", history.history["loss"][epoch], step=epoch)
+            mlflow.log_metric(
+                "train_accuracy", history.history["accuracy"][epoch], step=epoch
+            )
+            mlflow.log_metric(
+                "val_loss", history.history["val_loss"][epoch], step=epoch
+            )
+            mlflow.log_metric(
+                "val_accuracy", history.history["val_accuracy"][epoch], step=epoch
+            )
+
+        self.save_model(path=self.training_config.trained_model_path, model=self.model)
+        mlflow.log_artifact(
+            str(self.training_config.trained_model_path), artifact_path="trained_model"
+        )
